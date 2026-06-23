@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Minikube Practice App</title>
+    <style>
+        body { font-family: sans-serif; margin: 40px; background: #f4f4f9; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        ul { list-style: none; padding: 0; }
+        li { padding: 10px; border-bottom: 1px solid #eee; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Cluster User Directory</h2>
+        <ul id="users">Loading data from middle-tier...</ul>
+    </div>
+
+    <script>
+        // Use same-origin ingress routing so frontend and backend communicate
+        // through Kubernetes Services instead of direct NodePort access.
+        fetch('/api/data')
+            .then(res => res.json())
+            .then(data => {
+                const list = document.getElementById('users');
+                list.innerHTML = '';
+                data.forEach(user => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<strong>${user.name}</strong> - ${user.role} (${user.status})`;
+                    list.appendChild(li);
+                });
+            })
+            .catch(err => {
+                document.getElementById('users').innerHTML = '<span style="color:red;">Failed to connect to backend api</span>';
+                console.error(err);
+            });
+    </script>
+</body>
+</html>
